@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/splash/splash_screen.dart';
 
 void main() {
   runApp(const HandwritingApp());
@@ -16,14 +17,7 @@ class HandwritingApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Handwriting Recognition',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ),
+      home: const SplashScreen(),
     );
   }
 }
