@@ -31,8 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // TODO: replace this placeholder with your real logo, e.g.:
-            // Image.asset('assets/images/logo.png', width: 120, height: 120),
+            
             Container(
               width: 120,
               height: 120,
@@ -55,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Handwriting Recognition',
+              'InkScan',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
