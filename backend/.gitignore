@@ -1,0 +1,39 @@
+# Environment variables (contains DB password, secret key)
+backend/.env
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Temporary uploaded PDFs
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# TrOCR / Hugging Face model cache (if it ever lands inside the repo)
+model/
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Database
+*.sql.bak
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
