@@ -13,8 +13,6 @@ class RecognitionRepository {
     final fileName = pdfFile.path.split('/').last;
 
     final formData = FormData.fromMap({
-      // NOTE: confirm this matches request.files[...] in
-      // backend/routes/recognition.py (commonly 'file').
       'file': await MultipartFile.fromFile(pdfFile.path, filename: fileName),
     });
 
@@ -37,6 +35,23 @@ class RecognitionRepository {
           ? data['error'].toString()
           : (e.message ?? 'Failed to reach the recognition server');
       throw Exception(message);
+    }
+  }
+
+  Future<List<int>> downloadPdf(String text) async {
+    try {
+      final response = await _apiClient.dio.post(
+        ApiConstants.downloadPdfEndpoint,
+        data: {'text': text},
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data as List<int>;
+      }
+      throw Exception('Unexpected response: ${response.statusCode}');
+    } on DioException catch (e) {
+      throw Exception(e.message ?? 'Failed to download PDF');
     }
   }
 }

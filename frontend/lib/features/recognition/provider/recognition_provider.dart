@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../data/models/recognition_result.dart';
 import '../../../data/repositories/recognition_repository.dart';
 
@@ -15,6 +17,7 @@ class RecognitionProvider extends ChangeNotifier {
   double? confidenceScore;
   double? processingTime;
   String? errorMessage;
+  bool isDownloading = false;
 
   void setFile(File newFile) {
     file = newFile;
@@ -58,6 +61,33 @@ class RecognitionProvider extends ChangeNotifier {
       status = RecognitionStatus.failure;
     }
     notifyListeners();
+  }
+
+  Future<String?> downloadPdf() async {
+    if (recognizedText == null || recognizedText!.isEmpty) return null;
+
+    isDownloading = true;
+    notifyListeners();
+
+    try {
+      final bytes = await _repository.downloadPdf(recognizedText!);
+      final dir = await getApplicationDocumentsDirectory();
+      final filePath =
+          '${dir.path}/recognized_text_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final outFile = File(filePath);
+      await outFile.writeAsBytes(bytes);
+
+      await Share.shareXFiles([XFile(filePath)], text: 'Recognized text PDF');
+
+      isDownloading = false;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      isDownloading = false;
+      final message = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return message;
+    }
   }
 
   void reset() {

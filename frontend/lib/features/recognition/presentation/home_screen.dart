@@ -111,10 +111,14 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _ResultsSection(
                   text: provider.recognizedText!,
-                  onDownload: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Download logic not wired yet')),
-                    );
+                  isDownloading: provider.isDownloading,
+                  onDownload: () async {
+                    final error = await context.read<RecognitionProvider>().downloadPdf();
+                    if (error != null && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(error)),
+                      );
+                    }
                   },
                 ),
               ],
@@ -262,7 +266,12 @@ class _MessageBanner extends StatelessWidget {
 class _ResultsSection extends StatelessWidget {
   final String text;
   final VoidCallback onDownload;
-  const _ResultsSection({required this.text, required this.onDownload});
+  final bool isDownloading;
+  const _ResultsSection({
+    required this.text,
+    required this.onDownload,
+    this.isDownloading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -285,9 +294,15 @@ class _ResultsSection extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
                 TextButton.icon(
-                  onPressed: onDownload,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Download PDF'),
+                  onPressed: isDownloading ? null : onDownload,
+                  icon: isDownloading
+                      ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : const Icon(Icons.download_outlined, size: 18),
+                  label: Text(isDownloading ? 'Preparing...' : 'Download PDF'),
                 ),
               ],
             ),
