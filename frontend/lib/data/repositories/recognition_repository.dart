@@ -28,13 +28,9 @@ class RecognitionRepository {
             : Map<String, dynamic>.from(response.data as Map);
         return RecognitionResult.fromJson(data);
       }
-      throw Exception('Unexpected response: ${response.statusCode}');
+      throw Exception('Failed to recognize text');
     } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = (data is Map && data['error'] != null)
-          ? data['error'].toString()
-          : (e.message ?? 'Failed to reach the recognition server');
-      throw Exception(message);
+      throw Exception(_messageFor(e));
     }
   }
 
@@ -49,9 +45,28 @@ class RecognitionRepository {
       if (response.statusCode == 200 && response.data != null) {
         return response.data as List<int>;
       }
-      throw Exception('Unexpected response: ${response.statusCode}');
+      throw Exception('Failed to download PDF');
     } on DioException catch (e) {
-      throw Exception(e.message ?? 'Failed to download PDF');
+      throw Exception(_messageFor(e));
     }
+  }
+
+  String _messageFor(DioException e) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.unknown) {
+      return 'Failed to connect to server. Please ensure the Flask server '
+          'is running on port 5000.';
+    }
+    if (e.type == DioExceptionType.receiveTimeout) {
+      return 'The server took too long to respond. Large or complex PDFs '
+          'may need more processing time.';
+    }
+
+    final data = e.response?.data;
+    if (data is Map && data['error'] != null) {
+      return data['error'].toString();
+    }
+    return e.message ?? 'Something went wrong. Please try again.';
   }
 }

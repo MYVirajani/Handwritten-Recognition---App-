@@ -97,4 +97,9 @@ class RecognitionProvider extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
   }
+
+  Future<void> retry() {
+    errorMessage = null;
+    return recognize();
+  }
 }

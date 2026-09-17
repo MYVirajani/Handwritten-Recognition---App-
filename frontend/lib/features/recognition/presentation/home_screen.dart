@@ -97,6 +97,9 @@ class HomeScreen extends StatelessWidget {
                   text: provider.errorMessage!,
                   icon: Icons.error_outline,
                   color: Colors.red,
+                  onRetry: provider.status == RecognitionStatus.failure
+                      ? () => context.read<RecognitionProvider>().retry()
+                      : null,
                 ),
               ],
               if (successMessage != null) ...[
@@ -241,7 +244,13 @@ class _MessageBanner extends StatelessWidget {
   final String text;
   final IconData icon;
   final Color color;
-  const _MessageBanner({required this.text, required this.icon, required this.color});
+  final VoidCallback? onRetry;
+  const _MessageBanner({
+    required this.text,
+    required this.icon,
+    required this.color,
+    this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +266,11 @@ class _MessageBanner extends StatelessWidget {
           Icon(icon, color: color, size: 20),
           const SizedBox(width: 10),
           Expanded(child: Text(text, style: TextStyle(color: color))),
+          if (onRetry != null)
+            TextButton(
+              onPressed: onRetry,
+              child: Text('Try Again', style: TextStyle(color: color)),
+            ),
         ],
       ),
     );
