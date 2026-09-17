@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'core/api_client.dart';
+import 'data/repositories/recognition_repository.dart';
 import 'features/recognition/provider/recognition_provider.dart';
 import 'features/splash/splash_screen.dart';
 
@@ -12,8 +14,10 @@ class HandwritingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final repository = RecognitionRepository(ApiClient());
+
     return ChangeNotifierProvider(
-      create: (_) => RecognitionProvider(),
+      create: (_) => RecognitionProvider(repository),
       child: MaterialApp(
         title: 'Handwriting Recognition',
         debugShowCheckedModeBanner: false,
